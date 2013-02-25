@@ -26,6 +26,7 @@
 		autoReposition: true, //automatically reposition popover on popover change and window resize
 		anchor: false //anchor the popover to a different element
 	}
+	var events = ['init', 'show', 'hide', 'destroy'];
 	var popovers = [];
 	var _ = {
 		calc_position: function(popover, position) {
@@ -169,6 +170,12 @@
 							.unbind('resize.popover').bind('resize.popover', repos_function)
 							.unbind('scroll.popover').bind('scroll.popover', repos_function);
 					}
+					for(var i = 0; i < events.length; i++) {
+						if(options[events[i]]) {
+							$this.on("popover" + events[i], options[events[i]]);
+						}
+					}
+					$this.trigger("popoverinit");
 				}
 			});
 		},
@@ -282,6 +289,7 @@
 				$(window).unbind('.popover');
 				data.popover.remove();
 				$this.removeData('popover');
+				$this.trigger("popoverdestroy");
 			});
 		},
 		/**
@@ -299,6 +307,7 @@
 					$this.popover('reposition');
 					popover.clearQueue().css({ zIndex: 950 }).show();
 				}
+				$this.trigger("popovershow");
 			});
 		},
 		/**
@@ -313,6 +322,7 @@
 				
 				if (data) {
 					data.popover.hide().css({ zIndex: 949 });
+					$this.trigger("popoverhide");
 				}
 			});
 		},
@@ -330,6 +340,7 @@
 					var popover = data.popover;
 					var options = data.options;
 					popover.delay(100).css({ zIndex: 949 }).fadeOut(ms ? ms : options.fadeSpeed);
+					$this.trigger("popoverhide");
 				}
 			});
 		},
@@ -346,6 +357,7 @@
 				if (data) {
 					var popover = data.popover;
 					popover.hide();
+					$this.trigger("popoverhide");
 				}
 			});
 		},
@@ -364,6 +376,7 @@
 					var popover = data.popover;
 					var options = data.options;
 					popover.css({ zIndex: 949 }).fadeOut(ms ? ms : options.fadeSpeed);
+					$this.trigger("popoverhide");
 				}
 			});
 		},
